@@ -1,5 +1,6 @@
 ﻿#include <iostream>
 #include <fstream>
+#include <string>
 #include <Windows.h>
 
 class Address {
@@ -15,7 +16,8 @@ public:
 
     // getter and setter
     void set_input_address(std::ifstream& I_file);
-    void get_output_address(std::ofstream& O_file);
+    std::string get_output_address();
+    std::string get_city() { return this->city; }
 };
 
 Address::Address(std::string city, std::string street, int house_number, int apartament_number) {
@@ -32,8 +34,22 @@ void Address::set_input_address(std::ifstream& I_file) {
     I_file >> this->apartament_number;
 }
 
-void Address::get_output_address(std::ofstream& O_file) {
-    O_file << this->city << ", " << this->street << ", " << this->house_number << ", " << this->apartament_number << "\n";
+std::string Address::get_output_address() {
+    return this->get_city() + ", " + this->street + ", " + std::to_string(this->house_number) + ", " + std::to_string(this->apartament_number) + "\n";
+}
+
+// Функция сортировки
+void sort (Address* __addr, unsigned const int* size) {
+    Address temp;
+    for (int i = 0; i < *size - 1; ++i) {
+        for (int j = i + 1; j < *size; ++j) {
+            if (std::strcmp(__addr[i].get_city().c_str(), __addr[j].get_city().c_str()) > 0) {
+                temp = __addr[i];
+                __addr[i] = __addr[j];
+                __addr[j] = temp;
+            }
+        }
+    }
 }
 
 int main() {
@@ -55,18 +71,27 @@ int main() {
             // Взятие данных
             for (int i = 0; i < width; ++i)
                 addr[i].set_input_address(i_file);
+
+            // Соритировка
+            sort(addr, &width);
+
             // запись данных
-            for (int i = width - 1; i >= 0; --i)
-                addr[i].get_output_address(o_file);
+            for (int i = 0; i < width; ++i)
+                o_file << addr[i].get_output_address();
+
+            std::cout << "Запись прошла успешно!" << std::endl;
 
             delete[] addr;
             o_file.close();
-        }
-        else {
+            std::cout << "Файл вывода закрыт!" << std::endl;
+        } else {
             std::cout << "Не удалось найти или создать файл для вывода!" << std::endl;
+            i_file.close();
+            std::cout << "Файл ввода закрыт!" << std::endl;
             return 2;
         }
         i_file.close();
+        std::cout << "Файл ввода закрыт!" << std::endl;
     }
     else {
         std::cout << "Не удалось найти файл ввода!" << std::endl;

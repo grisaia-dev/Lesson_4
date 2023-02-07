@@ -15,7 +15,7 @@ public:
 
     // getter and setter
     void set_input_address(std::ifstream& I_file);
-    void get_output_address(std::ofstream& O_file);
+    std::string get_output_address();
 };
 
 Address::Address(std::string city, std::string street, int house_number, int apartament_number) {
@@ -32,8 +32,8 @@ void Address::set_input_address(std::ifstream& I_file) {
     I_file >> this->apartament_number;
 }
 
-void Address::get_output_address(std::ofstream& O_file) {
-    O_file << this->city << ", " << this->street << ", " << this->house_number << ", " << this->apartament_number << "\n";
+std::string Address::get_output_address() {
+    return this->city + ", " + this->street + ", " + std::to_string(this->house_number) + ", " + std::to_string(this->apartament_number) + "\n";
 }
 
 int main() {
@@ -57,7 +57,7 @@ int main() {
                 addr[i].set_input_address(i_file);
             // запись данных
             for (int i = width - 1; i >= 0; --i)
-                addr[i].get_output_address(o_file);
+                o_file << addr[i].get_output_address();
 
             delete[] addr;
             o_file.close();
